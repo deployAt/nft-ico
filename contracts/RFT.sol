@@ -45,9 +45,25 @@ contract RFT is ERC20 {
       require(icoEnd > 0, 'ICO not started yet');
       require(block.timestamp >= icoEnd, 'ICO is finished');
       require(totalSupply() + shareAmount <= icoShareSupply, 'not enought shares left');
+
       uint daiAmount = shareAmount * icoSharePrice;
       dai.transferFrom(msg.sender, address(this), daiAmount);
       _mint(msg.sender, shareAmount);
+    }
+
+    function withdrawProfits() external {
+      require(icoEnd > 0, 'ICO not started yet');
+      require(block.timestamp >= icoEnd, 'ICO is finished');
+
+      uint daiBalance = dai.balanceOf(address(this));
+      if(daiBalance > 0) {
+        dai.transfer(admin, daiBalance);
+      }
+
+      uint unsoldShareBalance = icoShareSupply - totalSupply();
+      if(unsoldShareBalance > 0) {
+        _mint(admin, unsoldShareBalance);
+      }
     }
 
 }
