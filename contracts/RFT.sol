@@ -35,7 +35,7 @@ contract RFT is ERC20 {
       admin = msg.sender;
     }
 
-    function startICO() external {
+    function startIco() external {
       require(msg.sender == admin, 'only admin');
       nft.transferFrom(msg.sender, address(this), nftId);
       icoEnd = block.timestamp + 7 * 86400;
@@ -43,7 +43,7 @@ contract RFT is ERC20 {
 
     function buyShare(uint shareAmount) external {
       require(icoEnd > 0, 'ICO not started yet');
-      require(block.timestamp >= icoEnd, 'ICO is finished');
+      require(block.timestamp <= icoEnd, 'ICO is finished');
       require(totalSupply() + shareAmount <= icoShareSupply, 'not enought shares left');
 
       uint daiAmount = shareAmount * icoSharePrice;
@@ -51,9 +51,9 @@ contract RFT is ERC20 {
       _mint(msg.sender, shareAmount);
     }
 
-    function withdrawProfits() external {
+    function withdrawIcoProfits() external {
       require(icoEnd > 0, 'ICO not started yet');
-      require(block.timestamp >= icoEnd, 'ICO is finished');
+      require(block.timestamp > icoEnd, 'ICO is NOT finished');
 
       uint daiBalance = dai.balanceOf(address(this));
       if(daiBalance > 0) {
